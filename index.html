@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/css/style.css">
+  <title>Chatbot A.N.A</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+  }
+
+  .chat-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    height: 300px; /* Defina uma altura máxima para o chat para habilitar a rolagem */
+  }
+
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .user-message {
+    background-color: #78aef5;
+    align-self: flex-end;
+    border-radius: 10px 5px 10px 10px;
+  }
+
+  .bot-message {
+    background-color: #e4e4e4;
+    border-radius: 10px 5px 10px 10px;
+  }
+
+  .message-content {
+    font-size: 14px;
+    color: #333;
+    word-wrap: break-word;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 80%;
+  }
+
+  .time {
+    font-size: 10px;
+    color: #000000;
+    align-self: flex-end;
+  }
+
+  .input-container {
+    display: flex;
+    align-items: center;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+
+</style>
+
+</head>
+<body>
+  <div class="chat-container" id="chat">
+    <div class="message-container bot-message">
+      <div class="message-content">Como posso ajudar?</div>
+    </div>
+  </div>
+
+  <div class="input-container">
+    <input type="text" id="input" placeholder="Digite sua pergunta">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+
+  <script>
+
+const perguntasERespostas = {
+
+"Transferencia": [
+  { text: "Transferência Imediata EAD", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Transfer%C3%AAncia-Imediata.aspx" },
+  { text: "Transferência de Faculdade/IES - EAD", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Transfer%C3%AAncia-de-Faculdade-IES.aspx" },
+  { text: "Transferência Imediata", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Transfer%C3%AAncia-imediata(1).aspx" }
+],
+
+"Boleto": [
+  { text: "Remoção de Boletos - EAD", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Remo%C3%A7%C3%A3o-de-Boletos.aspx" },
+  { text: "Boletos - EAD", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Boleto.aspx" },
+  { text: "Impressão de Boletos - EAD", link: "https://unipbr.sharepoint.com/sites/Possoajudarbeta/SitePages/Impress%C3%A3o-de-Boletos.aspx" }
+],
+
+"Como solicitar férias?": [
+  { text: "Você pode solicitar férias através deste formulário.", link: "http://intranet.example.com/ferias" },
+  { text: "As férias podem ser solicitadas pelo portal do RH.", link: "http://intranet.example.com/ferias" }
+],
+"Onde encontrar o formulário de despesas?": [
+  { text: "O formulário de despesas está disponível neste link.", link: "http://intranet.example.com/despesas" }
+],
+
+};
+
+function sendMessage() {
+const input = document.getElementById("input").value.trim();
+if (input === "") {
+  return;
+}
+
+const chatDiv = document.getElementById("chat");
+
+const userMessageDiv = document.createElement("div");
+userMessageDiv.className = "message-container user-message";
+
+const userMessageContentDiv = document.createElement("div");
+userMessageContentDiv.className = "message-content";
+userMessageContentDiv.textContent = input;
+
+const userMessageTimeDiv = document.createElement("div");
+userMessageTimeDiv.className = "time";
+userMessageTimeDiv.textContent = getTime();
+
+userMessageDiv.appendChild(userMessageContentDiv);
+userMessageDiv.appendChild(userMessageTimeDiv);
+chatDiv.appendChild(userMessageDiv);
+
+// Rolar o chat para baixo para mostrar a última mensagem
+chatDiv.scrollTop = chatDiv.scrollHeight;
+
+document.getElementById("input").value = "";
+
+// Função auxiliar para obter a hora atual formatada
+function getTime() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+// Mostrar animação de "digitando..."
+const typingAnimationDiv = document.createElement("div");
+typingAnimationDiv.className = "message-container bot-message";
+
+const typingMessageDiv = document.createElement("div");
+typingMessageDiv.className = "message-content";
+typingMessageDiv.textContent = "Digitando...";
+typingMessageDiv.classList.add("typing-animation");
+typingAnimationDiv.appendChild(typingMessageDiv);
+
+chatDiv.appendChild(typingAnimationDiv);
+
+// Rolar o chat para baixo para mostrar a última mensagem
+chatDiv.scrollTop = chatDiv.scrollHeight;
+
+// Aguardar 3 segundos antes de exibir a resposta do bot
+setTimeout(() => {
+  // Remover animação de "digitando..."
+  chatDiv.removeChild(typingAnimationDiv);
+
+  if (perguntasERespostas[input]) {
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.className = "message-container bot-message";
+
+    for (const resposta of perguntasERespostas[input]) {
+      const botMessageContentDiv = document.createElement("div");
+      botMessageContentDiv.className = "message-content";
+
+      if (resposta.link) {
+        const linkElement = document.createElement("a");
+        linkElement.href = resposta.link;
+        linkElement.textContent = resposta.text;
+        botMessageContentDiv.appendChild(linkElement);
+      } else {
+        botMessageContentDiv.textContent = resposta.text;
+      }
+
+      const botMessageTimeDiv = document.createElement("div");
+      botMessageTimeDiv.className = "time";
+      botMessageTimeDiv.textContent = getTime();
+
+      botMessageDiv.appendChild(botMessageContentDiv);
+      botMessageDiv.appendChild(botMessageTimeDiv);
+      chatDiv.appendChild(botMessageDiv);
+    }
+  } else {
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.className = "message-container bot-message";
+
+    const botMessageContentDiv = document.createElement("div");
+    botMessageContentDiv.className = "message-content";
+    botMessageContentDiv.textContent = "Desculpe, não tenho uma resposta para essa pergunta.";
+
+    const botMessageTimeDiv = document.createElement("div");
+    botMessageTimeDiv.className = "time";
+    botMessageTimeDiv.textContent = getTime();
+
+    botMessageDiv.appendChild(botMessageContentDiv);
+    botMessageDiv.appendChild(botMessageTimeDiv);
+    chatDiv.appendChild(botMessageDiv);
+  }
+
+  // Rolar o chat para baixo para mostrar a última mensagem
+  chatDiv.scrollTop = chatDiv.scrollHeight;
+}, 3000); // Intervalo de 3 segundos (3000 milissegundos)
+}
+
+
+  </script>
+
+</body>
+</html>
